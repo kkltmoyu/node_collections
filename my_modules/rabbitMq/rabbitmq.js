@@ -1,38 +1,67 @@
-var q = 'tasks';
+// var q = 'tasks';
 
-function bail(err) {
-  console.error(err);
-  process.exit(1);
-}
+// function bail(err) {
+//   console.error(err);
+//   process.exit(1);
+// }
 
-// Publisher
+// // Publisher
+// function publisher(conn) {
+//   conn.createChannel(on_open);
+//   function on_open(err, ch) {
+//     if (err != null) bail(err);
+//     ch.assertQueue(q);
+//     ch.sendToQueue(q, Buffer.from('something to do'));
+//   }
+// }
+
+// // Consumer
+// function consumer(conn) {
+//   var ok = conn.createChannel(on_open);
+//   function on_open(err, ch) {
+//     if (err != null) bail(err);
+//     ch.assertQueue(q);
+//     ch.consume(q, function(msg) {
+//       if (msg !== null) {
+//         console.log(msg.content.toString());
+//         ch.ack(msg);
+//       }
+//     });
+//   }
+// }
+
+// require('amqplib/callback_api')
+//   .connect('amqp://localhost', function(err, conn) {
+//     if (err != null) bail(err);
+//     consumer(conn);
+//     publisher(conn);
+//   });
+
+
+const topic = 'hi';
+var amqp = require('amqplib/callback_api');
 function publisher(conn) {
-  conn.createChannel(on_open);
-  function on_open(err, ch) {
-    if (err != null) bail(err);
-    ch.assertQueue(q);
-    ch.sendToQueue(q, Buffer.from('something to do'));
-  }
+    conn.createChannel(on_open);
+    function on_open(err, ch) {
+        if (err != null) bail(err);
+        ch.assertQueue(topic);
+        ch.sendToQueue(topic, new Buffer('something to do'));
+    }
 }
-
-// Consumer
 function consumer(conn) {
-  var ok = conn.createChannel(on_open);
-  function on_open(err, ch) {
-    if (err != null) bail(err);
-    ch.assertQueue(q);
-    ch.consume(q, function(msg) {
-      if (msg !== null) {
-        console.log(msg.content.toString());
-        ch.ack(msg);
-      }
-    });
-  }
+    var ok = conn.createChannel(on_open);
+    function on_open(err, ch) {
+        if (err != null) bail(err);
+        ch.assertQueue(topic);
+        ch.consume(topic, function(msg) {
+            if (msg !== null) {
+                console.log('consumer',msg.content.toString());
+                ch.ack(msg);
+            }
+        });
+    }
 }
-
-require('amqplib/callback_api')
-  .connect('amqp://localhost', function(err, conn) {
-    if (err != null) bail(err);
+amqp.connect('amqp://guest:guest@localhost', function(err, conn) {
     consumer(conn);
     publisher(conn);
-  });
+});
