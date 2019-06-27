@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "kkltmoyu",
   "license": "MIT License",
   "dependencies": {
     "amqplib": "^0.5.3",
+    "chai": "^4.2.0",
     "generic-pool": "^3.6.1",
     "hiredis": "^0.5.0",
+    "mocha": "^6.1.3",
     "redis": "^2.8.0"
   }
 }
